@@ -54,6 +54,13 @@ def create_item_exporter(output):
             },
             converters=[UnixTimestampItemConverter(), IntToDecimalItemConverter(),
                         ListFieldItemConverter('topics', 'topic', fill=4)])
+    elif item_exporter_type == ItemExporterType.KINESIS:
+        from blockchainetl.jobs.exporters.kinesis_item_exporter import KinesisItemExporter
+        input = output.split(":")
+        if len(input) > 1:
+            item_exporter = KinesisItemExporter(output.split(":")[1])
+        else:
+            item_exporter = KinesisItemExporter()
     elif item_exporter_type == ItemExporterType.CONSOLE:
         item_exporter = ConsoleItemExporter()
     else:
@@ -69,11 +76,14 @@ def determine_item_exporter_type(output):
         return ItemExporterType.POSTGRES
     elif output is None or output == 'console':
         return ItemExporterType.CONSOLE
+    elif output is None or output.startswith('kinesis'):
+        return ItemExporterType.KINESIS
     else:
         return ItemExporterType.UNKNOWN
 
 
 class ItemExporterType:
+    KINESIS = 'kinesis'
     PUBSUB = 'pubsub'
     POSTGRES = 'postgres'
     CONSOLE = 'console'

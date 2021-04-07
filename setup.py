@@ -42,6 +42,7 @@ setup(
         'ethereum-dasm==0.1.4',
         'base58',
         'requests',
+        'kinesis-python'
     ],
     extras_require={
         'streaming': [
